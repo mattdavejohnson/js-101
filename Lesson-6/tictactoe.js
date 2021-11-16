@@ -45,6 +45,22 @@ function emptySquares(board) {
   return Object.keys(board).filter((key) => board[key] === INITIAL_MARKER);
 }
 
+function joinOr(arr, delimiter = ', ', word = 'or') {
+  switch (arr.length) {
+    case 0:
+      return '';
+    case 1:
+      return `${arr[0]}`;
+    case 2:
+      return arr.join(` ${word} `);
+    default:
+      return (
+        arr.slice(0, arr.length - 1).join(delimiter) +
+        `${delimiter}${word} ${arr[arr.length - 1]}`
+      );
+  }
+}
+
 function boardFull(board) {
   return emptySquares(board).length === 0;
 }
@@ -90,7 +106,7 @@ function playerChoosesSquare(board) {
   let square;
 
   while (true) {
-    prompt(`Choose a square (${emptySquares(board).join(', ')})`);
+    prompt(`Choose a square: ${joinOr(emptySquares(board))}`);
     square = readline.question().trim();
 
     if (emptySquares(board).includes(square)) break;
