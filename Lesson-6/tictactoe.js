@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 /* eslint-disable max-lines-per-function */
 // Create a tic tac toe game
 
@@ -124,30 +125,72 @@ function computerChoosesSquare(board) {
   board[square] = COMPUTER_MARKER;
 }
 
+function displayWinTotal(player, computer) {
+  console.log('**********************************');
+  console.log('*  First to five wins the match  *');
+  console.log('*                                *');
+  console.log(`*       Player Wins:    ${player}        *`);
+  console.log(`*       Computer Wins:  ${computer}        *`);
+  console.log('*                                *');
+  console.log('**********************************');
+}
+
 while (true) {
-  let board = initializeBoard();
+  let playerWinTotal = 0;
+  let computerWinTotal = 0;
 
-  while (true) {
-    displayBoard(board);
+  while (playerWinTotal < 5 && computerWinTotal < 5) {
+    let board = initializeBoard();
 
-    playerChoosesSquare(board);
-    if (someoneWon(board) || boardFull(board)) break;
+    while (true) {
+      displayBoard(board);
+      displayWinTotal(playerWinTotal, computerWinTotal);
 
-    computerChoosesSquare(board);
-    if (someoneWon(board) || boardFull(board)) break;
+      playerChoosesSquare(board);
+
+      if (boardFull(board)) {
+        break;
+      } else if (someoneWon(board)) {
+        displayBoard(board);
+        if (detectWinner(board) === 'Player') {
+          playerWinTotal += 1;
+          break;
+        } else {
+          computerWinTotal += 1;
+          break;
+        }
+      }
+
+      computerChoosesSquare(board);
+
+      if (boardFull(board)) {
+        break;
+      } else if (someoneWon(board)) {
+        displayBoard(board);
+        if (detectWinner(board) === 'Player') {
+          playerWinTotal += 1;
+          break;
+        } else {
+          computerWinTotal += 1;
+          break;
+        }
+      }
+    }
   }
 
-  displayBoard(board);
+  displayWinTotal(playerWinTotal, computerWinTotal);
 
-  if (someoneWon(board)) {
-    prompt(`${detectWinner(board)} won!`);
-  } else {
-    prompt("It's a tie!");
+  if (playerWinTotal === 5) {
+    prompt('Player won the match!');
+    prompt('Play again? (y or n)');
+    let answer = readline.question().toLowerCase()[0];
+    if (answer !== 'y') break;
+  } else if (computerWinTotal === 5) {
+    prompt('Computer won the match!');
+    prompt('Play again? (y or n)');
+    let answer = readline.question().toLowerCase()[0];
+    if (answer !== 'y') break;
   }
-
-  prompt('Play again? (y or n)');
-  let answer = readline.question().toLowerCase()[0];
-  if (answer !== 'y') break;
 }
 
 prompt('Thanks for playing Tic Tac Toe!');
