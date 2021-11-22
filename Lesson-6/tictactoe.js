@@ -8,6 +8,7 @@ const readline = require('readline-sync');
 const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
+const WHO_FIRST = ['player', 'computer'];
 const WINNING_LINES = [
   [1, 2, 3],
   [4, 5, 6],
@@ -170,33 +171,47 @@ function findAtRiskSquare(line, board, marker) {
   return null;
 }
 
+function chooseSquare(board, player) {
+  if (player === 'player') {
+    playerChoosesSquare(board);
+  }
+  if (player === 'computer') {
+    computerChoosesSquare(board);
+  }
+}
+
+function alternatePlayer(player) {
+  if (player === 'player') {
+    return 'computer';
+  } else {
+    return 'player';
+  }
+}
+
 while (true) {
   let playerWinTotal = 0;
   let computerWinTotal = 0;
+  let currentPlayer = '';
+  let first;
+
+  while (true) {
+    prompt('Who should go first? (player or computer)?');
+    first = readline.question();
+
+    if (WHO_FIRST.includes(first)) break;
+
+    prompt("Sorry, that's not a valid choice.");
+  }
 
   while (playerWinTotal < 5 && computerWinTotal < 5) {
     let board = initializeBoard();
+    currentPlayer = first;
 
     while (true) {
       displayBoard(board);
       displayWinTotal(playerWinTotal, computerWinTotal);
-
-      playerChoosesSquare(board);
-
-      if (boardFull(board)) {
-        break;
-      } else if (someoneWon(board)) {
-        displayBoard(board);
-        if (detectWinner(board) === 'Player') {
-          playerWinTotal += 1;
-          break;
-        } else {
-          computerWinTotal += 1;
-          break;
-        }
-      }
-
-      computerChoosesSquare(board);
+      chooseSquare(board, currentPlayer);
+      currentPlayer = alternatePlayer(currentPlayer);
 
       if (boardFull(board)) {
         break;
@@ -224,7 +239,7 @@ while (true) {
   prompt('Play again (y or n)');
   let answer = readline.question();
   while (answer !== 'y' && answer !== 'Y' && answer !== 'n' && answer !== 'N') {
-    prompt('Invalid response. Play again? (y or n)');
+    prompt("Sorry, that's not a valid response. Play again? (y or n)");
     answer = readline.question();
   }
 
