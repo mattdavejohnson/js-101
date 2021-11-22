@@ -122,14 +122,14 @@ function computerChoosesSquare(board) {
 
   for (let index = 0; index < WINNING_LINES.length; index++) {
     let line = WINNING_LINES[index];
-    square = findAtRiskSquare(line, board, HUMAN_MARKER);
+    square = findAtRiskSquare(line, board, COMPUTER_MARKER);
     if (square) break;
   }
 
   if (!square) {
     for (let index = 0; index < WINNING_LINES.length; index++) {
       let line = WINNING_LINES[index];
-      square = findAtRiskSquare(line, board, COMPUTER_MARKER);
+      square = findAtRiskSquare(line, board, HUMAN_MARKER);
       if (square) break;
     }
   }
