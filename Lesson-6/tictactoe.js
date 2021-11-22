@@ -8,7 +8,9 @@ const readline = require('readline-sync');
 const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
-const WHO_FIRST = ['player', 'computer'];
+const WHO_FIRST = ['player', 'computer', 'p', 'c'];
+const CONTINUE_PLAYING = ['Y', 'y', 'N', 'n'];
+const WINNING_TOTAL = 5;
 const WINNING_LINES = [
   [1, 2, 3],
   [4, 5, 6],
@@ -193,9 +195,10 @@ while (true) {
   let computerWinTotal = 0;
   let currentPlayer = '';
   let first;
+  let answer;
 
   while (true) {
-    prompt('Who should go first? (player or computer)?');
+    prompt("Who should go first? ('p' for player or 'c' for computer)");
     first = readline.question();
 
     if (WHO_FIRST.includes(first)) break;
@@ -203,7 +206,7 @@ while (true) {
     prompt("Sorry, that's not a valid choice.");
   }
 
-  while (playerWinTotal < 5 && computerWinTotal < 5) {
+  while (playerWinTotal < WINNING_TOTAL && computerWinTotal < WINNING_TOTAL) {
     let board = initializeBoard();
     currentPlayer = first;
 
@@ -230,17 +233,19 @@ while (true) {
 
   displayWinTotal(playerWinTotal, computerWinTotal);
 
-  if (playerWinTotal === 5) {
+  if (playerWinTotal === WINNING_TOTAL) {
     prompt('Player won the match!');
-  } else if (computerWinTotal === 5) {
+  } else if (computerWinTotal === WINNING_TOTAL) {
     prompt('Computer won the match!');
   }
 
-  prompt('Play again (y or n)');
-  let answer = readline.question();
-  while (answer !== 'y' && answer !== 'Y' && answer !== 'n' && answer !== 'N') {
-    prompt("Sorry, that's not a valid response. Play again? (y or n)");
+  while (true) {
+    prompt("Play again? ('y' or 'n')");
     answer = readline.question();
+
+    if (CONTINUE_PLAYING.includes(answer)) break;
+
+    prompt("Sorry, that's not a valid response.");
   }
 
   if (answer === 'n' || answer === 'N') {
