@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-depth */
 /* eslint-disable max-lines-per-function */
 // Create a tic tac toe game
@@ -134,6 +135,10 @@ function computerChoosesSquare(board) {
     }
   }
 
+  if (board['5'] === INITIAL_MARKER) {
+    square = 5;
+  }
+
   if (!square) {
     let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
     square = emptySquares(board)[randomIndex];
@@ -212,14 +217,19 @@ while (true) {
 
   if (playerWinTotal === 5) {
     prompt('Player won the match!');
-    prompt('Play again? (y or n)');
-    let answer = readline.question().toLowerCase()[0];
-    if (answer !== 'y') break;
   } else if (computerWinTotal === 5) {
     prompt('Computer won the match!');
-    prompt('Play again? (y or n)');
-    let answer = readline.question().toLowerCase()[0];
-    if (answer !== 'y') break;
+  }
+
+  prompt('Play again (y or n)');
+  let answer = readline.question();
+  while (answer !== 'y' && answer !== 'Y' && answer !== 'n' && answer !== 'N') {
+    prompt('Invalid response. Play again? (y or n)');
+    answer = readline.question();
+  }
+
+  if (answer === 'n' || answer === 'N') {
+    break;
   }
 }
 
