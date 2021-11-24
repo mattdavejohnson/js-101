@@ -1,5 +1,10 @@
 // Create the game Twenty-One, a stripped down version of Blackjack
 
+const readline = require('readline-sync');
+
+const STAND = ['s', 'S', 'stand', 'Stand'];
+const HIT = ['h', 'H', 'hit', 'Hit'];
+const FACE_CARDS = ['J', 'Q', 'K'];
 const SUITS = ['C', 'H', 'S', 'D'];
 const VALUES = [
   '2',
@@ -43,6 +48,56 @@ function initializeHand(deck) {
   return hand;
 }
 
+function displayHand(hand) {
+  console.log('Your current hand:');
+  hand.forEach((card) => {
+    console.log(`${card[1]} of ${card[0]}`);
+  });
+}
+
+function calculateHand(hand) {
+  let values = hand.map((card) => {
+    if (FACE_CARDS.includes(card[1])) {
+      return 10;
+    } else if (card[1] === 'A') {
+      return 11;
+    } else {
+      return Number(card[1]);
+    }
+  });
+
+  let total = values.reduce((previous, current) => previous + current);
+  return total;
+}
+
+function playerTurn(deck, hand) {
+  displayHand(hand);
+
+  while (true) {
+    let answer;
+    while (true) {
+      console.log('Would you like to hit (h) or stand (s)?');
+      answer = readline.question();
+
+      if (STAND.includes(answer) || HIT.includes(answer)) break;
+
+      console.log("Sorry, that's not a valid choice.");
+    }
+
+    if (STAND.includes(answer)) {
+      console.log('You choose to stand.');
+      break;
+    }
+
+    if (HIT.includes(answer)) {
+      hand[hand.length] = deck.pop();
+    }
+
+    displayHand(hand);
+    console.log(`Total: ${calculateHand(hand)}`);
+  }
+}
+
 let deck = initializeDeck();
 shuffle(deck);
 
@@ -51,3 +106,5 @@ console.log(playerHand);
 
 let dealerHand = initializeHand(deck);
 console.log(dealerHand);
+
+playerTurn(deck, playerHand);
