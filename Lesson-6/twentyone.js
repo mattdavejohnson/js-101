@@ -70,26 +70,35 @@ function calculateHand(hand) {
   return total;
 }
 
+function hitOrStand() {
+  let answer;
+  while (true) {
+    console.log('Would you like to hit (h) or stand (s)?');
+    answer = readline.question();
+
+    if (STAND.includes(answer)) {
+      return 'stand';
+    }
+    if (HIT.includes(answer)) {
+      return 'hit';
+    }
+
+    console.log("Sorry, that's not a valid choice.");
+  }
+}
+
 function playerTurn(deck, hand) {
   displayHand(hand);
 
   while (true) {
-    let answer;
-    while (true) {
-      console.log('Would you like to hit (h) or stand (s)?');
-      answer = readline.question();
+    let answer = hitOrStand();
 
-      if (STAND.includes(answer) || HIT.includes(answer)) break;
-
-      console.log("Sorry, that's not a valid choice.");
-    }
-
-    if (STAND.includes(answer)) {
+    if (answer === 'stand') {
       console.log('You choose to stand.');
       break;
     }
 
-    if (HIT.includes(answer)) {
+    if (answer === 'hit') {
       hand[hand.length] = deck.pop();
     }
 
