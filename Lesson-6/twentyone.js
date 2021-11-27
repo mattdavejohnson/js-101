@@ -4,6 +4,7 @@ const readline = require('readline-sync');
 
 const STAND = ['s', 'S', 'stand', 'Stand'];
 const HIT = ['h', 'H', 'hit', 'Hit'];
+const BLACKJACK = 21;
 const FACE_CARDS = ['J', 'Q', 'K'];
 const SUITS = ['C', 'H', 'S', 'D'];
 const VALUES = [
@@ -48,12 +49,30 @@ function initializeHand(deck) {
   return hand;
 }
 
-function displayHand(hand) {
+function displayHand(playerHand, dealerHand) {
+  console.clear();
+  console.log('Dealers current hand:');
+  console.log('---------------------');
+  console.log(`${dealerHand[0][1]} of ${dealerHand[0][0]}`);
+  console.log('Facedown card');
+
+  console.log('');
   console.log('Your current hand:');
-  hand.forEach((card) => {
+  console.log('---------------------');
+  playerHand.forEach((card) => {
     console.log(`${card[1]} of ${card[0]}`);
   });
+  console.log(`Total: ${calculateHand(playerHand)}`);
 }
+
+// function displayDealerHand(hand) {
+//   console.clear();
+//   console.log('Dealers final hand:');
+//   console.log('---------------------');
+//   hand.forEach((card) => {
+//     console.log(`${card[1]} of ${card[0]}`);
+//   });
+// }
 
 function calculateHand(hand) {
   let values = hand.map((card) => {
@@ -87,33 +106,107 @@ function hitOrStand() {
   }
 }
 
-function playerTurn(deck, hand) {
-  displayHand(hand);
-
-  while (true) {
-    let answer = hitOrStand();
-
-    if (answer === 'stand') {
-      console.log('You choose to stand.');
-      break;
-    }
-
-    if (answer === 'hit') {
-      hand[hand.length] = deck.pop();
-    }
-
-    displayHand(hand);
-    console.log(`Total: ${calculateHand(hand)}`);
+function busted(hand) {
+  let total = calculateHand(hand);
+  if (total > BLACKJACK) {
+    return true;
+  } else {
+    return false;
   }
 }
 
-let deck = initializeDeck();
-shuffle(deck);
+function playerTurn(deck, playerHand, dealerHand) {
+  displayHand(playerHand, dealerHand);
 
-let playerHand = initializeHand(deck);
-console.log(playerHand);
+  while (calculateHand(playerHand) < BLACKJACK) {
+    let answer = hitOrStand();
+    if (answer === 'stand') {
+      console.log('You choose to stand.');
+      break;
+    } else if (answer === 'hit') {
+      playerHand[playerHand.length] = deck.pop();
+    }
 
-let dealerHand = initializeHand(deck);
-console.log(dealerHand);
+    displayHand(playerHand, dealerHand);
+  }
+}
 
-playerTurn(deck, playerHand);
+function dealerTurn(deck, playerHand, dealerHand) {
+  if (calculateHand(playerHand) === BLACKJACK) {
+    return;
+  }
+
+  // displayDealerHand(dealerHand);
+
+  while (true) {
+    if (calculateHand(dealerHand) >= 17) {
+      break;
+    } else {
+      dealerHand[dealerHand.length] = deck.pop();
+    }
+
+    // displayDealerHand(dealerHand);
+  }
+}
+
+function displayFinalHand(playerHand, dealerHand) {
+  console.clear();
+  console.log('Dealers final hand:');
+  console.log('---------------------');
+  dealerHand.forEach((card) => {
+    console.log(`${card[1]} of ${card[0]}`);
+  });
+
+  console.log('');
+  console.log('Your final hand:');
+  console.log('---------------------');
+  playerHand.forEach((card) => {
+    console.log(`${card[1]} of ${card[0]}`);
+  });
+}
+
+function displayWinner(playerHand, dealerHand) {
+  console.log('');
+  console.log('Final Score:');
+  console.log('---------------------');
+  console.log(`Dealer: ${calculateHand(dealerHand)}`);
+  console.log(`Player: ${calculateHand(playerHand)}`);
+  console.log('');
+
+  if (busted(dealerHand)) {
+    console.log('Dealer busted. You win!');
+  } else if (calculateHand(playerHand) > calculateHand(dealerHand)) {
+    console.log('You win!');
+  } else if (calculateHand(playerHand) < calculateHand(dealerHand)) {
+    console.log('Dealer wins.');
+  } else if (calculateHand(playerHand) === BLACKJACK) {
+    console.log('You got blackjack! You win!');
+  } else {
+    console.log('You tied.');
+  }
+}
+
+while (true) {
+  let deck = initializeDeck();
+  shuffle(deck);
+
+  let playerHand = initializeHand(deck);
+  let dealerHand = initializeHand(deck);
+
+  playerTurn(deck, playerHand, dealerHand);
+
+  if (calculateHand(playerHand) === BLACKJACK) {
+    console.log('You got blackjack! You win!');
+    break;
+  } else if (busted(playerHand)) {
+    console.log('Sorry, you busted.');
+    break;
+  }
+
+  dealerTurn(deck, playerHand, dealerHand);
+
+  displayFinalHand(playerHand, dealerHand);
+  displayWinner(playerHand, dealerHand);
+
+  break;
+}
