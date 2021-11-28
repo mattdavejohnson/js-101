@@ -4,6 +4,7 @@ const readline = require('readline-sync');
 
 const STAND = ['s', 'S', 'stand', 'Stand'];
 const HIT = ['h', 'H', 'hit', 'Hit'];
+const CONTINUE_PLAYING = ['n', 'N', 'no', 'No', 'y', 'Y', 'yes', 'Yes'];
 const BLACKJACK = 21;
 const FACE_CARDS = ['J', 'Q', 'K'];
 const SUITS = ['C', 'H', 'S', 'D'];
@@ -65,27 +66,26 @@ function displayHand(playerHand, dealerHand) {
   console.log(`Total: ${calculateHand(playerHand)}`);
 }
 
-// function displayDealerHand(hand) {
-//   console.clear();
-//   console.log('Dealers final hand:');
-//   console.log('---------------------');
-//   hand.forEach((card) => {
-//     console.log(`${card[1]} of ${card[0]}`);
-//   });
-// }
-
 function calculateHand(hand) {
-  let values = hand.map((card) => {
-    if (FACE_CARDS.includes(card[1])) {
-      return 10;
-    } else if (card[1] === 'A') {
-      return 11;
+  let values = hand.map((card) => card[1]);
+
+  let total = 0;
+  values.forEach((value) => {
+    if (value === 'A') {
+      total += 11;
+    } else if (FACE_CARDS.includes(value)) {
+      total += 10;
     } else {
-      return Number(card[1]);
+      total += Number(value);
     }
   });
 
-  let total = values.reduce((previous, current) => previous + current);
+  values
+    .filter((value) => value === 'A')
+    .forEach(() => {
+      if (total > 21) total -= 10;
+    });
+
   return total;
 }
 
@@ -132,11 +132,9 @@ function playerTurn(deck, playerHand, dealerHand) {
 }
 
 function dealerTurn(deck, playerHand, dealerHand) {
-  if (calculateHand(playerHand) === BLACKJACK) {
+  if (calculateHand(playerHand) === BLACKJACK || busted(playerHand)) {
     return;
   }
-
-  // displayDealerHand(dealerHand);
 
   while (true) {
     if (calculateHand(dealerHand) >= 17) {
@@ -144,8 +142,6 @@ function dealerTurn(deck, playerHand, dealerHand) {
     } else {
       dealerHand[dealerHand.length] = deck.pop();
     }
-
-    // displayDealerHand(dealerHand);
   }
 }
 
@@ -163,10 +159,10 @@ function displayFinalHand(playerHand, dealerHand) {
   playerHand.forEach((card) => {
     console.log(`${card[1]} of ${card[0]}`);
   });
+  console.log('');
 }
 
 function displayWinner(playerHand, dealerHand) {
-  console.log('');
   console.log('Final Score:');
   console.log('---------------------');
   console.log(`Dealer: ${calculateHand(dealerHand)}`);
@@ -175,15 +171,35 @@ function displayWinner(playerHand, dealerHand) {
 
   if (busted(dealerHand)) {
     console.log('Dealer busted. You win!');
+  } else if (busted(playerHand)) {
+    console.log('You busted. Dealer wins.');
+  } else if (calculateHand(playerHand) === BLACKJACK) {
+    console.log('You got blackjack! You win!');
   } else if (calculateHand(playerHand) > calculateHand(dealerHand)) {
     console.log('You win!');
   } else if (calculateHand(playerHand) < calculateHand(dealerHand)) {
     console.log('Dealer wins.');
-  } else if (calculateHand(playerHand) === BLACKJACK) {
-    console.log('You got blackjack! You win!');
   } else {
     console.log('You tied.');
   }
+}
+
+function playAgain() {
+  let answer;
+  while (true) {
+    console.log("Play again? ('y' or 'n')");
+    answer = readline.question();
+
+    if (CONTINUE_PLAYING.includes(answer)) break;
+
+    console.log("Sorry, that's not a valid response.");
+  }
+
+  if (answer === 'n' || answer === 'N' || answer === 'no' || answer === 'No') {
+    return false;
+  }
+
+  return true;
 }
 
 while (true) {
@@ -194,19 +210,13 @@ while (true) {
   let dealerHand = initializeHand(deck);
 
   playerTurn(deck, playerHand, dealerHand);
-
-  if (calculateHand(playerHand) === BLACKJACK) {
-    console.log('You got blackjack! You win!');
-    break;
-  } else if (busted(playerHand)) {
-    console.log('Sorry, you busted.');
-    break;
-  }
-
   dealerTurn(deck, playerHand, dealerHand);
 
   displayFinalHand(playerHand, dealerHand);
   displayWinner(playerHand, dealerHand);
 
-  break;
+  if (!playAgain()) {
+    console.log('Thank you for playing Twenty-One!');
+    break;
+  }
 }
