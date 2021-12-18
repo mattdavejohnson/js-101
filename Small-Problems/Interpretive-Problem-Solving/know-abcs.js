@@ -20,6 +20,7 @@ If the following rules apply to the passed in string, return true.
 
 - Cannot use both letters from any given block.
 - Can only use each block once.
+- Ignore case.
 
 
 E:
@@ -104,3 +105,8 @@ function isBlockWord(word) {
 console.log(isBlockWord('BATCH'));
 console.log(isBlockWord('BUTCH'));
 console.log(isBlockWord('jest'));
+console.log(isBlockWord('floW'));
+console.log(isBlockWord('APPLE'));
+console.log(isBlockWord('apple'));
+console.log(isBlockWord('apPLE'));
+console.log(isBlockWord('Box'));
