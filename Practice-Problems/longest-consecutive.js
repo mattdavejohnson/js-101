@@ -96,3 +96,81 @@ that correspond to the index locations in the array argument
 C:
 
 */
+
+function longestConsec(array, number) {
+  if (array.length === 0 || number > array.length || number <= 0) {
+    return '';
+  }
+
+  let longestString = 0;
+  let longestLocation = [];
+  let lengthOfStringsArray = array.slice().map((word) => word.length);
+  let numberOfComparisons = array.length - number + 1;
+
+  for (let index = 0; index < numberOfComparisons; index += 1) {
+    let currentValue = lengthOfStringsArray
+      .slice(index, number + index)
+      .reduce((acc, curr) => acc + curr);
+
+    if (currentValue > longestString) {
+      longestString = currentValue;
+      longestLocation = array.slice(index, number + index);
+    }
+  }
+
+  return longestLocation.join('');
+}
+
+// Test Cases
+console.log(
+  longestConsec(['zone', 'abigail', 'theta', 'form', 'libe', 'zas'], 2) ===
+    'abigailtheta'
+);
+
+console.log(
+  longestConsec(
+    [
+      'ejjjjmmtthh',
+      'zxxuueeg',
+      'aanlljrrrxx',
+      'dqqqaaabbb',
+      'oocccffuucccjjjkkkjyyyeehh',
+    ],
+    1
+  ) === 'oocccffuucccjjjkkkjyyyeehh'
+);
+
+console.log(longestConsec([], 3) === '');
+
+console.log(
+  longestConsec(
+    [
+      'itvayloxrp',
+      'wkppqsztdkmvcuwvereiupccauycnjutlv',
+      'vweqilsfytihvrzlaodfixoyxvyuyvgpck',
+    ],
+    2
+  ) === 'wkppqsztdkmvcuwvereiupccauycnjutlvvweqilsfytihvrzlaodfixoyxvyuyvgpck'
+);
+
+console.log(
+  longestConsec(['wlwsasphmxx', 'owiaxujylentrklctozmymu', 'wpgozvxxiu'], 2) ===
+    'wlwsasphmxxowiaxujylentrklctozmymu'
+);
+
+console.log(
+  longestConsec(['zone', 'abigail', 'theta', 'form', 'libe', 'zas'], -2) === ''
+);
+
+console.log(
+  longestConsec(['it', 'wkppv', 'ixoyx', '3452', 'zzzzzzzzzzzz'], 3) ===
+    'ixoyx3452zzzzzzzzzzzz'
+);
+
+console.log(
+  longestConsec(['it', 'wkppv', 'ixoyx', '3452', 'zzzzzzzzzzzz'], 15) === ''
+);
+
+console.log(
+  longestConsec(['it', 'wkppv', 'ixoyx', '3452', 'zzzzzzzzzzzz'], 0) === ''
+);
